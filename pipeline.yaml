@@ -1,0 +1,122 @@
+---
+jobs:
+- name: build-((app_name))
+  plan:
+  - get: tools
+  - get: application
+    trigger: true
+  - task: build
+    file: tools/tasks/build/task.yml
+
+- name: deploy-((app_name))-dev
+  plan:
+  - get: application
+    trigger: true
+    passed: [build-((app_name))]
+  - put: cf-foundation
+    params:
+      command: zero-downtime-push
+      manifest: application/manifest.dev.yml
+      org: docu
+      space: dev
+      path: application/
+      current_app_name: ((app_name))
+
+- name: dev-smoke-tests
+  plan:
+    - get: tools
+    - get: cf-foundation
+      trigger: true
+      passed: [deploy-((app_name))-dev]
+    - task: run-smoke-tests
+      file: tools/tasks/smoke/task.yml
+      params:
+        app_url: ((dev_route))
+
+- name: deploy-((app_name))-test
+  plan:
+  - get: application
+  - get: cf-foundation
+    trigger: true
+    passed: [dev-smoke-tests]
+  - put: cf-foundation
+    params:
+      command: zero-downtime-push
+      manifest: application/manifest.test.yml
+      org: docu
+      space: test
+      path: application/
+      current_app_name: ((app_name))
+
+- name: test-smoke-tests
+  plan:
+    - get: tools
+    - get: cf-foundation
+      trigger: true
+      passed: [deploy-((app_name))-test]
+    - task: run-smoke-tests
+      file: tools/tasks/smoke/task.yml
+      params:
+        app_url: ((test_route))
+
+- name: test-scale
+  plan:
+    - get: cf-foundation
+      trigger: true
+      passed: [test-smoke-tests]
+    - put: cf-scale
+      resource: cf-foundation
+      params:
+        command: scale
+        org: docu
+        space: test
+        app_name: ((app_name))
+        instances: 5
+
+resources:
+- name: application
+  type: git
+  source:
+    uri: ((git_repo))
+
+- name: tools
+  type: git
+  source:
+    uri: https://github.com/warroyo/cf-sample-pipeline
+    branch: master
+
+# - name: cf-dev
+#   type: cf
+#   source:
+#     api: https://api.sys.pas.east.aws.warroyo.com
+#     username: admin
+#     password: ((pas_aws_warroyo))
+#     organization: docu
+#     space: dev
+#     skip_cert_check: true
+
+- name: cf-foundation
+  type: cf-cli-resource
+  source:
+    api: https://api.sys.pas.east.aws.warroyo.com
+    username: admin
+    password: ((pas_aws_warroyo))
+    skip_cert_check: true
+
+resource_types:
+- name: cf-cli-resource
+  type: docker-image
+  source:
+    repository: nulldriver/cf-cli-resource
+    tag: latest
+
+
+# - name: cf-test
+#   type: cf
+#   source:
+#     api: https://api.sys.pas.east.aws.warroyo.com
+#     username: admin
+#     password: ((pas_aws_warroyo))
+#     organization: docu
+#     space: test
+#     skip_cert_check: true
