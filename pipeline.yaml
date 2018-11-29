@@ -14,7 +14,7 @@ jobs:
       name: application/release-name.txt
       tag: application/release.txt
       globs:
-      - build/build-files/target-*.jar
+      - build-files/application/target/*.jar
 
 - name: deploy-((app_name))-dev
   plan:
@@ -100,7 +100,7 @@ resources:
   source:
     owner: warroyo
     repository: beer-service-cf
-    access_token: abcdef1234567890
+    access_token: ((github_token))
 
 # - name: cf-dev
 #   type: cf

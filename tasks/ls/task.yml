@@ -7,6 +7,7 @@ image_resource:
 inputs:
   - name: tools
   - name: application
+  - name: build-files
 
 run:
   path: ./tools/tasks/ls/task.sh
