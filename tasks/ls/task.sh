@@ -1,4 +1,4 @@
 #!/bin/sh
 set -e 
 
-ls -ltr
+ls -ltr build-files

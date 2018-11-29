@@ -14,7 +14,7 @@ jobs:
       name: application/release-name.txt
       tag: application/release.txt
       globs:
-      - build-files/application/target/*.jar
+      - build-files/target/*.jar
 
 - name: deploy-((app_name))-dev
   plan:
