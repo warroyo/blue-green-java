@@ -9,4 +9,4 @@ inputs:
   - name: tools
 
 run:
-  path: ./tools/tasks/build/build.sh
+  path: ./tools/tasks/build/task.sh
