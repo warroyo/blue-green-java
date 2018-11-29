@@ -43,6 +43,7 @@ jobs:
 
 - name: deploy-((app_name))-test
   plan:
+  - get: application
   - get: gh-release
   - get: cf-foundation
     trigger: true
