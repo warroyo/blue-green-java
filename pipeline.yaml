@@ -82,7 +82,7 @@ resources:
 - name: tools
   type: git
   source:
-    uri: https://github.com/warroyo/cf-sample-pipeline
+    uri: https://github.com/warroyo/blue-green-java
     branch: master
 
 # - name: cf-dev
