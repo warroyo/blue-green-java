@@ -7,6 +7,14 @@ jobs:
     trigger: true
   - task: build
     file: tools/tasks/build/task.yml
+  - task: ls
+    file: tools/tasks/ls/task.yml
+  - put: gh-release
+    params:
+      name: 
+      tag: build/application/release.txt
+      globs:
+      - build/application/target-*.jar
 
 - name: deploy-((app_name))-dev
   plan:
@@ -14,8 +22,7 @@ jobs:
   - get: application
     trigger: true
     passed: [build-((app_name))]
-  - task: ls
-    file: tools/tasks/ls/task.yml
+  
   - put: cf-foundation
     params:
       command: zero-downtime-push
@@ -87,6 +94,13 @@ resources:
   source:
     uri: https://github.com/warroyo/blue-green-java
     branch: master
+
+- name: gh-release
+  type: github-release
+  source:
+    owner: warroyo
+    repository: java-sample
+    access_token: abcdef1234567890
 
 # - name: cf-dev
 #   type: cf

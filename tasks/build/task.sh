@@ -3,4 +3,4 @@ set -e
 
 
 cd application
-./gradlew build
+./mavenw build
