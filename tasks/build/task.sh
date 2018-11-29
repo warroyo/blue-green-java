@@ -3,4 +3,4 @@ set -e
 
 
 cd application
-./mvnw build
+./mvnw clean package
