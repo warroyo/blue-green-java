@@ -3,4 +3,4 @@ set -e
 
 
 cd application
-./mavenw build
+./mvnw build
