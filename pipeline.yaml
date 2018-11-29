@@ -13,6 +13,8 @@ jobs:
   - get: application
     trigger: true
     passed: [build-((app_name))]
+  - task: ls
+    file: tools/tasks/ls/task.yml
   - put: cf-foundation
     params:
       command: zero-downtime-push
