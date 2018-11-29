@@ -10,6 +10,7 @@ jobs:
 
 - name: deploy-((app_name))-dev
   plan:
+  - get: tools
   - get: application
     trigger: true
     passed: [build-((app_name))]
