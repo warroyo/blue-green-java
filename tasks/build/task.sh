@@ -3,4 +3,4 @@ set -e
 
 
 cd application
-gradle build
+./gradlew build
