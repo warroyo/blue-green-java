@@ -11,10 +11,10 @@ jobs:
     file: tools/tasks/ls/task.yml
   - put: gh-release
     params:
-      name: 
-      tag: build/application/release.txt
+      name: application/release-name.txt
+      tag: application/release.txt
       globs:
-      - build/application/target-*.jar
+      - build/build-files/target-*.jar
 
 - name: deploy-((app_name))-dev
   plan:
@@ -99,7 +99,7 @@ resources:
   type: github-release
   source:
     owner: warroyo
-    repository: java-sample
+    repository: beer-service-cf
     access_token: abcdef1234567890
 
 # - name: cf-dev
