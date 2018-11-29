@@ -7,8 +7,6 @@ jobs:
     trigger: true
   - task: build
     file: tools/tasks/build/task.yml
-  - task: ls
-    file: tools/tasks/ls/task.yml
   - put: gh-release
     params:
       name: application/release-name.txt
@@ -20,16 +18,16 @@ jobs:
   plan:
   - get: tools
   - get: application
+  - get: gh-release
     trigger: true
     passed: [build-((app_name))]
-  
   - put: cf-foundation
     params:
       command: zero-downtime-push
       manifest: application/manifest.dev.yml
-      org: docu
-      space: dev
-      path: application/
+      org: pivot-warroyo
+      space: development
+      path: gh-release/*.jar
       current_app_name: ((app_name))
 
 - name: dev-smoke-tests
@@ -45,7 +43,7 @@ jobs:
 
 - name: deploy-((app_name))-test
   plan:
-  - get: application
+  - get: gh-release
   - get: cf-foundation
     trigger: true
     passed: [dev-smoke-tests]
@@ -53,9 +51,9 @@ jobs:
     params:
       command: zero-downtime-push
       manifest: application/manifest.test.yml
-      org: docu
+      org: pivot-warroyo
       space: test
-      path: application/
+      path: gh-release/*.jar
       current_app_name: ((app_name))
 
 - name: test-smoke-tests
@@ -78,10 +76,10 @@ jobs:
       resource: cf-foundation
       params:
         command: scale
-        org: docu
+        org: pivot-warroyo
         space: test
         app_name: ((app_name))
-        instances: 5
+        instances: 4
 
 resources:
 - name: application
@@ -102,22 +100,12 @@ resources:
     repository: beer-service-cf
     access_token: ((github_token))
 
-# - name: cf-dev
-#   type: cf
-#   source:
-#     api: https://api.sys.pas.east.aws.warroyo.com
-#     username: admin
-#     password: ((pas_aws_warroyo))
-#     organization: docu
-#     space: dev
-#     skip_cert_check: true
-
 - name: cf-foundation
   type: cf-cli-resource
   source:
-    api: https://api.sys.pas.east.aws.warroyo.com
-    username: admin
-    password: ((pas_aws_warroyo))
+    api: https://api.run.pcfone.io
+    username: warroyo7199008@gmail.com
+    password: ((pcfone_warroyo))
     skip_cert_check: true
 
 resource_types:
@@ -127,13 +115,3 @@ resource_types:
     repository: nulldriver/cf-cli-resource
     tag: latest
 
-
-# - name: cf-test
-#   type: cf
-#   source:
-#     api: https://api.sys.pas.east.aws.warroyo.com
-#     username: admin
-#     password: ((pas_aws_warroyo))
-#     organization: docu
-#     space: test
-#     skip_cert_check: true
